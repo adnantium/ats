@@ -1,8 +1,10 @@
 import uuid
 from django.db import models
 
-
-APPLICANT_STATUS_CHOICES = ["Pending", "Accepted", "Rejected"]
+PENDING = "Pending"
+APPROVED = "Approved"
+REJECTED = "Rejected"
+APPLICANT_STATUS_CHOICES = [PENDING, APPROVED, REJECTED]
 
 
 class Applicant(models.Model):
@@ -13,23 +15,20 @@ class Applicant(models.Model):
     status = models.CharField(
         max_length=50,
         choices=[(c,c) for c in APPLICANT_STATUS_CHOICES],
-        default=APPLICANT_STATUS_CHOICES[0],
+        default=PENDING,
     )
-    note = models.TextField()
+    note = models.TextField(blank=True, null=True)
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
 
+    def approve_applicant(self):
+        self.status = APPROVED
+        self.save()
 
-class HRManager(models.Model):
-    uid = models.UUIDField(unique=True)
-    name = models.CharField(max_length=255)
-    email = models.EmailField(unique=True)
-    password = models.CharField(max_length=255)
+    def reject_applicant(self):
+        self.status = REJECTED
+        self.save()
 
-
-class HRManagerPermissions(models.Model):
-    hr_manager = models.ForeignKey(HRManager, on_delete=models.CASCADE)
-    view_applicant = models.BooleanField(default=False)
-    create_applicant = models.BooleanField(default=False)
-    accept_reject_applicant = models.BooleanField(default=False)
-    update_notes = models.BooleanField(default=False)
+    def update_note(self, text):
+        self.note = text
+        self.save()

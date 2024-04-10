@@ -1,11 +1,13 @@
 
 
 from django.urls import path
-from applicants.views import ApplicantListCreateAPIView
+from applicants.views import ApplicantListCreateAPIView, ApplicantDetail, CreateApplicant
 
 app_name = 'applicants'
 
 urlpatterns = [
-    path('applicants/', ApplicantListCreateAPIView.as_view()),
-    # path('<int:pk>/', TodoDetailAPIView.as_view(), name="detail"),
+    # path('', ApplicantListCreateAPIView.as_view()),
+    path('', ApplicantListCreateAPIView.as_view()),
+    # path('users', ListUsers.as_view()),
+    path('<uuid:pk>/', ApplicantDetail.as_view(), name="detail"),
 ]

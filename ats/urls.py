@@ -22,11 +22,10 @@ from applicants import views
 
 router = routers.DefaultRouter()
 router.register(r'applicants', views.ApplicantViewSet)
-router.register(r'hrmanagers', views.HRManagerViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    # path('applicants/', include('applicants.urls')),
+    # path('applications/', include('applicants.urls')),
     path('admin/', admin.site.urls),
 ]
