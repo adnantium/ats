@@ -14,7 +14,7 @@ from applicants.models import Applicant, APPROVED, REJECTED, PENDING
 
 class ATSAPITestCase(APITestCase):
     """Helper base class for ATS API tests. Sets up test users and groups and utility methods."""
-    
+
     fixtures = ["groups.json"]
     client = APIClient()
 
@@ -66,7 +66,7 @@ class TestGetCreateApplicant(ATSAPITestCase):
             password=self.password,
             group_names=["CanAddApplicants", "CanViewApplicants"],
         )
-        
+
         self.test_applicant = Applicant.objects.create(name="test applicant")
 
     def test_get_applicant_list_unauthenticated(self):
@@ -83,7 +83,6 @@ class TestGetCreateApplicant(ATSAPITestCase):
 
         response = self.client.post(self.url, {"name": "test applicant"})
         self.assertEqual(response.status_code, 403)
-
 
     def test_get_applicant_list_can_view_applicants(self):
         """Checks that a user with the CanViewApplicants permission can view the applicant list."""
@@ -141,7 +140,7 @@ class TestUpdateApplicant(ATSAPITestCase):
         self.user_no_permissions = self.create_test_user(
             self.username_no_permissions, self.email, self.password
         )
-        
+
         self.test_applicant = Applicant.objects.create(name="test applicant")
 
     def test_update_applicant_unauthenticated(self):
