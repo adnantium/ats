@@ -26,6 +26,5 @@ router.register(r'applicants', views.ApplicantViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    # path('applications/', include('applicants.urls')),
     path('admin/', admin.site.urls),
 ]
