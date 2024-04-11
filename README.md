@@ -9,7 +9,7 @@ Setup and run locally. You will `git`, `poetry` `httpie` (optional) which can be
 
 ### Setup
 ```shell
-% git clone https://github.com/adnantium/ats.git
+% git clone https://github.com/adnantium/osiq_ats.git
 ....
 % cd osiq_ats/
 % poetry install
