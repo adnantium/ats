@@ -85,4 +85,5 @@ Got to: http://127.0.0.1:8000/ for DRF interface
 - [ ] Switch to `pytest`
 - [ ] Ensure unused HTTP methods are deactivated for each endpoint
 - [ ] Add design and implementation notes to README
+- [ ] Verify completeness of test coverage
 
