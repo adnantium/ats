@@ -77,9 +77,12 @@ Got to: http://127.0.0.1:8000/ for DRF interface
 
 ### TODO
 - [ ] Setup docker
+  - [ ] Add export of `requirements.txt` from `poetry`
 - [ ] Switch to postgres (currently using sqllite)
 - [ ] Check with `pylint`
 - [ ] Check with `mypy`
 - [ ] Verify formatting with `black` (mostly done)
 - [ ] Switch to `pytest`
+- [ ] Ensure unused HTTP methods are deactivated for each endpoint
+- [ ] Add design and implementation notes to README
 
