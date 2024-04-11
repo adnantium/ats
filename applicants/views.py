@@ -23,7 +23,12 @@ from .permissions import (
 class ApplicantViewSet(viewsets.ModelViewSet):
     queryset = Applicant.objects.all().order_by("name")
     serializer_class = ApplicantSerializer
-    permission_classes = [CanViewApplicants | CanAddApplicants]
+    permission_classes = [CanViewApplicants]
+
+    def create(self, request, *args, **kwargs):
+        if not CanAddApplicants().has_permission(request=request, view=self):
+            raise PermissionDenied()
+        return super().create(request, *args, **kwargs) 
 
     @action(
         methods=["PATCH"],
@@ -53,24 +58,24 @@ class ApplicantViewSet(viewsets.ModelViewSet):
             ApplicantSerializer(applicant).data, status=status.HTTP_202_ACCEPTED
         )
 
-    @action(
-        methods=["PATCH"],
-        detail=True,
-        permission_classes=[CanUpdateNote],
-        url_path="note",
-        url_name="note",
-    )
-    def update_note(self, request, pk=None):
-        applicant = get_object_or_404(Applicant, pk=pk)
-        if text := request.data.get("note"):
-            applicant.update_note(text)
-            return Response(
-                ApplicantSerializer(applicant).data, status=status.HTTP_202_ACCEPTED
-            )
-        return Response(
-            {"status": "fail", "message": "note is required"},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
+    # @action(
+    #     methods=["PATCH"],
+    #     detail=True,
+    #     permission_classes=[CanUpdateNote],
+    #     url_path="note",
+    #     url_name="note",
+    # )
+    # def update_note(self, request, pk=None):
+    #     applicant = get_object_or_404(Applicant, pk=pk)
+    #     if text := request.data.get("note"):
+    #         applicant.update_note(text)
+    #         return Response(
+    #             ApplicantSerializer(applicant).data, status=status.HTTP_202_ACCEPTED
+    #         )
+    #     return Response(
+    #         {"status": "fail", "message": "note is required"},
+    #         status=status.HTTP_400_BAD_REQUEST,
+    #     )
 
 
 
