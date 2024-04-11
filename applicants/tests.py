@@ -2,25 +2,61 @@ import json
 from django.test import TestCase
 from django.contrib.auth.models import User, Group
 from django.urls import reverse
-from rest_framework.test import APITestCase, APIRequestFactory, force_authenticate, APIClient
+from rest_framework.test import (
+    APITestCase,
+    APIRequestFactory,
+    force_authenticate,
+    APIClient,
+)
 from applicants.views import ApplicantViewSet
 
-class TestGetApplicantList(APITestCase):
-    fixtures = ['groups.json']
+class ATSAPITestCase(APITestCase):
+    def create_test_user(
+        self, username: str, email: str, password: str, group_names: list = []
+    ):
+        """Helper to create a testing user with the given username, email, password, and add groups."""
+        user = User.objects.create_user(username, email, password)
+        for group_name in group_names:
+            user.groups.add(Group.objects.get(name=group_name))
+        user.save()
+        return user
+
+class TestGetCreateApplicant(ATSAPITestCase):
+    """Tests the ApplicantViewSet for GET and POST requests.
+    Checks that users with the correct permissions can view and add applicants.
+    Permissions tested: CanViewApplicants, CanAddApplicants
+    """
+    fixtures = ["groups.json"]
     url = reverse("applicant-list")
     client = APIClient()
-    
+
     def setUp(self):
         self.username_can_view = "can_view_applicants"
-        self.username_cannot_view = "cannot_view_applicants"
-        self.email = "john@snow.com"
+        self.username_no_permissions = "no_permissions"
+        self.username_can_view_add = "can_view_add_applicants"
+        self.email = "email@email.com"
         self.password = "test-password"
 
-        self.user_can_view_applicants = User.objects.create_user(self.username_can_view, self.email, self.password)
-        self.user_can_view_applicants.groups.add(Group.objects.get(name='CanViewApplicants'))
-        self.user_can_view_applicants.save()
-
-        self.user_cannot_view_applicants = User.objects.create_user(self.username_cannot_view, self.email, self.password)
+        # can view applicants, not ADD
+        self.user_can_view_applicants = self.create_test_user(
+            username=self.username_can_view,
+            email=self.email,
+            password=self.password,
+            group_names=["CanViewApplicants"],
+        )
+        
+        # no permissions
+        self.user_no_permissions = self.create_test_user(
+            self.username_no_permissions, self.email, self.password
+        )
+        
+        # can add and view applicants
+        self.user_can_view_add_applicants = self.create_test_user(
+            username=self.username_can_view_add,
+            email=self.email,
+            password=self.password,
+            group_names=["CanAddApplicants", "CanViewApplicants"],
+        )
 
     def test_get_applicant_list_unauthenticated(self):
         response = self.client.get(self.url)
@@ -30,39 +66,25 @@ class TestGetApplicantList(APITestCase):
         self.client.login(username=self.username_can_view, password=self.password)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
+
+    def test_get_applicant_list_no_permissions(self):
+        self.client.login(username=self.username_no_permissions, password=self.password)
         
-    def test_get_applicant_list_cannot_view_applicants(self):
-        self.client.login(username=self.username_cannot_view, password=self.password)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 403)
+
+        response = self.client.post(self.url, {"name": "test applicant"})
+        self.assertEqual(response.status_code, 403)
+
+    def test_add_applicant_can_add_applicants(self):
+        self.client.login(username=self.user_can_view_add_applicants, password=self.password)
         
+        response = self.client.post(self.url, {"name": "test applicant"})
+        self.assertEqual(response.status_code, 201)
+        self.assertIn("uid", response.data)
+        uid = response.data["uid"]
+        
+        url_detail = reverse("applicant-detail", kwargs={"pk": uid})
+        response = self.client.get(url_detail)
+        self.assertEqual(response.status_code, 200)
 
-    # def test_user_(self):
-    #     Applicant.objects.create(user=self.user, name="Clean the car!")
-    #     response = self.client.get(self.url)
-    #     self.assertTrue(len(json.loads(response.content)) == Applicant.objects.count())
-
-
-
-
-# class UserLoginAPIViewTestCase(APITestCase):
-#     url = reverse("users:login")
-
-#     def setUp(self):
-#         self.username = "john"
-#         self.email = "john@snow.com"
-#         self.password = "you_know_nothing"
-#         self.user = User.objects.create_user(self.username, self.email, self.password)
-
-#     def test_authentication_without_password(self):
-#         response = self.client.post(self.url, {"username": "snowman"})
-#         self.assertEqual(400, response.status_code)
-
-#     def test_authentication_with_wrong_password(self):
-#         response = self.client.post(self.url, {"username": self.username, "password": "I_know"})
-#         self.assertEqual(400, response.status_code)
-
-#     def test_authentication_with_valid_data(self):
-#         response = self.client.post(self.url, {"username": self.username, "password": self.password})
-#         self.assertEqual(200, response.status_code)
-#         self.assertTrue("auth_token" in json.loads(response.content))
