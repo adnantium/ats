@@ -14,12 +14,4 @@ COPY ./requirements.txt .
 RUN pip install -r requirements.txt
 
 # copy project
-# WORKDIR /usr/src/ats/
 COPY ./ats/ats/ .
-
-# CMD ["ls -la"]
-
-# CMD ["django-admin ", "loaddata", "groups.json"]
-
-# # run server
-# CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
