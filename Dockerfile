@@ -14,7 +14,7 @@ COPY ./requirements.txt .
 RUN pip install -r requirements.txt
 
 # copy project
-WORKDIR /usr/src/ats/
+# WORKDIR /usr/src/ats/
 COPY ./ats/ats/ .
 
 # CMD ["ls -la"]

@@ -4,7 +4,7 @@ services:
   web:
     build: .
     # command: bash -c "python ats/manage.py migrate && python ats/manage.py runserver 0.0.0.0:8000"
-    command: bash ats/start_server.sh
+    command: bash ats/ats/start_server.sh
     volumes:
       - .:/usr/src/ats
     ports:
