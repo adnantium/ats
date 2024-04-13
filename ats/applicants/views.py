@@ -28,6 +28,10 @@ class ApplicantViewSet(ModelViewSet):
     def create(self, request: Request) -> Response:
         """Extension of default create() method that also checks for 
         CanAddApplicants permissions."""
+        # TODO: This not elegant and kind of ugly. 
+        # There must be a better way to do this.
+        # pylint complains about this line, but it's necessary to check permissions
+        # W0221: Variadics removed overriding 'ApplicantViewSet.create' method (arguments-differ)
         if not CanAddApplicants().has_permission(request=request, view=self):
             raise PermissionDenied()
         return super().create(request)

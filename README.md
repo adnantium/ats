@@ -92,10 +92,10 @@ Go to: http://127.0.0.1:8000/ for DRF interface
 - [X] Setup docker
 - [X] Ensure unused HTTP methods are deactivated for each endpoint
 - [X] Add design and implementation notes to README
-- [ ] Verify completeness of test coverage
-- [ ] Switch to postgres (currently using sqllite)
-- [ ] Check with `pylint`
-- [ ] Check with `mypy`
+- [X] Check with `pylint`
 - [X] Verify formatting with `black` (mostly done)
+- [ ] Switch to postgres (currently using sqllite)
+- [ ] Check with `mypy`
+- [ ] Verify completeness of test coverage
 - [ ] Switch to `pytest`
 
