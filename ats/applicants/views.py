@@ -1,3 +1,4 @@
+"""docstring for views.py"""
 import uuid
 from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
@@ -6,7 +7,6 @@ from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.exceptions import PermissionDenied
 
-from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 
 from .models import Applicant
@@ -18,14 +18,16 @@ from .permissions import (
     CanUpdateNote,
 )
 
-
 class ApplicantViewSet(ModelViewSet):
+    """Contains all views for the Applicant model GET/POST/PATCH endpoints."""
+    
     queryset = Applicant.objects.all().order_by("name")
     serializer_class = ApplicantSerializer
     permission_classes = [CanViewApplicants]
 
     def create(self, request: Request) -> Response:
-        """Extension of default create() method that also checks for CanAddApplicants permissions."""
+        """Extension of default create() method that also checks for 
+        CanAddApplicants permissions."""
         if not CanAddApplicants().has_permission(request=request, view=self):
             raise PermissionDenied()
         return super().create(request)

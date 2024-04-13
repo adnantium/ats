@@ -5,7 +5,7 @@
 
 ## Quickstart
 
-Setup and run locally. You will `git`, `poetry` `httpie` (optional) which can be installed with `brew` if needed.
+Setup and run locally. You will need `git`, `poetry` `httpie` (optional).
 
 ### Setup
 ```shell
@@ -43,7 +43,7 @@ Starting development server at http://127.0.0.1:8000/
 ....
 ```
 
-Got to: http://127.0.0.1:8000/ for DRF interface
+Go to: http://127.0.0.1:8000/ for DRF interface
 
 ### Endpoints
 * `GET /applicants/`
@@ -56,7 +56,7 @@ Got to: http://127.0.0.1:8000/ for DRF interface
 ### User, groups & permissions
 * Users for demo are created from `demo_users.json` fixture
   * `peter`: 
-* Use permissions for access to API endpoints is based the user's group from `groups.json` fixture
+* User permissions for access to API endpoints is based the user's group from `groups.json` fixture
 * Available groups/permissions
   * `CanAddApplicants`
   * `CanViewApplicants`
@@ -75,15 +75,27 @@ Got to: http://127.0.0.1:8000/ for DRF interface
 * `http --auth peter:django99 -f PATCH http://127.0.0.1:8000/applicants/<UUID>/reject/`
 
 
+### Application Design
+* Using Django's User and Groups models
+* The 4 permissions sets are associated to a User via Group membership
+* Built with Django Rest Framework because it is by far the most popular choice. 
+  * It is getting a little bloated (just like Django)
+* Permission check are done thru DRF's permissions module
+* Permissioning is configured at the API level which enforces authentication, not within the code for each endpoint
+* Using ModelViewSet for endpoints because it offers good extensibility and works well with DRF UI.
+
+### Interesting pylint messages
+* `views.py:26:4: W0221: Variadics removed in overriding 'ApplicantViewSet.create' method (arguments-differ)`
+* `tests.py:20:4: W0102: Dangerous default value [] as argument (dangerous-default-value)`
+
 ### TODO
-- [ ] Setup docker
-  - [ ] Add export of `requirements.txt` from `poetry`
+- [X] Setup docker
+- [X] Ensure unused HTTP methods are deactivated for each endpoint
+- [X] Add design and implementation notes to README
+- [ ] Verify completeness of test coverage
 - [ ] Switch to postgres (currently using sqllite)
 - [ ] Check with `pylint`
 - [ ] Check with `mypy`
-- [ ] Verify formatting with `black` (mostly done)
+- [X] Verify formatting with `black` (mostly done)
 - [ ] Switch to `pytest`
-- [ ] Ensure unused HTTP methods are deactivated for each endpoint
-- [ ] Add design and implementation notes to README
-- [ ] Verify completeness of test coverage
 

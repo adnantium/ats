@@ -1,19 +1,15 @@
-import json
-from django.test import TestCase
+"""Tests for the applicants app. Tests the ApplicantViewSet for GET, POST, and PATCH requests."""
+
 from django.contrib.auth.models import User, Group
 from django.urls import reverse
-from rest_framework.test import (
-    APITestCase,
-    APIRequestFactory,
-    force_authenticate,
-    APIClient,
-)
-from applicants.views import ApplicantViewSet
+from rest_framework.test import APITestCase, APIClient
+
 from applicants.models import Applicant, APPROVED, REJECTED, PENDING
 
 
 class ATSAPITestCase(APITestCase):
-    """Helper base class for ATS API tests. Sets up test users and groups and utility methods."""
+    """Helper base class for ATS API tests. Sets up test users and groups and
+    utility methods."""
 
     fixtures = ["groups.json"]
     client = APIClient()
@@ -22,9 +18,10 @@ class ATSAPITestCase(APITestCase):
     password = "test-password"
 
     def create_test_user(
-        self, username: str, email: str, password: str, group_names: list = []
+        self, username: str, email: str, password: str, group_names: list = None
     ):
-        """Helper to create a testing user with the given username, email, password, and add groups."""
+        """Helper to create a testing user with the given username, email, password,
+        and add groups."""
         user = User.objects.create_user(username, email, password)
         for group_name in group_names:
             user.groups.add(Group.objects.get(name=group_name))
@@ -110,7 +107,8 @@ class TestGetCreateApplicant(ATSAPITestCase):
 
 class TestUpdateApplicant(ATSAPITestCase):
     """Tests the ApplicantViewSet for PATCH requests.
-    Checks that users with the correct permissions can approve, reject, and update notes for applicants.
+    Checks that users with the correct permissions can approve, reject, and
+    update notes for applicants.
     Permissions tested: CanApproveApplicants, CanUpdateNote
     Urls: /applicants/<uid>/approve/, /applicants/<uid>/reject/, /applicants/<uid>/note/
     """
@@ -158,7 +156,8 @@ class TestUpdateApplicant(ATSAPITestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_update_applicant_no_permissions(self):
-        """Checks authenticated user with no permissions cannot approve, reject, or update notes."""
+        """Checks authenticated user with no permissions cannot approve, reject, or 
+        update notes."""
         self.client.login(username=self.username_no_permissions, password=self.password)
 
         url = reverse("applicant-approve", kwargs={"pk": self.test_applicant.uid})
@@ -174,7 +173,8 @@ class TestUpdateApplicant(ATSAPITestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_approve_reject_applicant_can_approve(self):
-        """Checks that a user with the CanApproveApplicants permission can approve and reject applicants."""
+        """Checks that a user with the CanApproveApplicants permission can approve and 
+        reject applicants."""
         self.client.login(username=self.username_can_approve, password=self.password)
 
         url = reverse("applicant-approve", kwargs={"pk": self.test_applicant.uid})
